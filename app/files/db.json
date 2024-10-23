@@ -1,0 +1,387 @@
+{
+  "object": "list",
+  "results": [
+    {
+      "object": "page",
+      "id": "3c4d157e-4303-4eb0-a8c8-ac9e81510dea",
+      "created_time": "2024-08-16T14:29:00.000Z",
+      "last_edited_time": "2024-10-23T17:38:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "91b0cd33-11f5-410a-b8e3-fe4abd8be4f6"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "d52410bb-cfff-4f14-8365-cc5677d70635"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "database_id",
+        "database_id": "68915aa0-e5e9-4ca6-ad32-aa2b12afbe36"
+      },
+      "archived": false,
+      "in_trash": false,
+      "properties": {
+        "Editor": {
+          "id": "%3ATWa",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Weight": {
+          "id": "%3BOkt",
+          "type": "number",
+          "number": null
+        },
+        "Publication Year": {
+          "id": "%3CRz%3C",
+          "type": "number",
+          "number": null
+        },
+        "Pages": {
+          "id": "%3EWp%7C",
+          "type": "number",
+          "number": null
+        },
+        "ISBN": {
+          "id": "A%60%40W",
+          "type": "number",
+          "number": null
+        },
+        "Reading Status": {
+          "id": "BUBw",
+          "type": "multi_select",
+          "multi_select": [
+            {
+              "id": "0e425044-a610-4a5f-b2f0-c9c9bca12dc7",
+              "name": "Read",
+              "color": "yellow"
+            },
+            {
+              "id": "cb0a9d32-2eb6-4028-9eac-5802268a0f41",
+              "name": "Reading",
+              "color": "blue"
+            },
+            {
+              "id": "fe718f7f-2670-4258-a509-8160d98ea599",
+              "name": "Want to Read",
+              "color": "gray"
+            },
+            {
+              "id": "a76577bf-4838-4340-910a-ec09eea8a3c8",
+              "name": "Paused",
+              "color": "green"
+            },
+            {
+              "id": "b6103050-0c13-434f-a634-84a638e2a055",
+              "name": "Dropped",
+              "color": "pink"
+            }
+          ]
+        },
+        "Genres": {
+          "id": "CN%40A",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Data Retrieved": {
+          "id": "G%7D%5Dt",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Setting Country": {
+          "id": "J%3CQT",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Illustrator": {
+          "id": "L%3FYs",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Setting Era": {
+          "id": "OpxN",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Series": {
+          "id": "RWu%5E",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Language": {
+          "id": "ThVO",
+          "type": "select",
+          "select": null
+        },
+        "Publisher": {
+          "id": "ThqF",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Imprint": {
+          "id": "TrNh",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Author": {
+          "id": "XwA%5B",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Publication Country": {
+          "id": "%5D%40Mp",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Height": {
+          "id": "%5EM%60v",
+          "type": "number",
+          "number": null
+        },
+        "Translator": {
+          "id": "_%5DG%60",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Collection": {
+          "id": "d%5B%3BZ",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Spine Width": {
+          "id": "iNm%3C",
+          "type": "number",
+          "number": null
+        },
+        "Format": {
+          "id": "q%3At%5D",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "First pub. year": {
+          "id": "wD%5DI",
+          "type": "number",
+          "number": null
+        },
+        "Ownership Status": {
+          "id": "zp%3Ap",
+          "type": "multi_select",
+          "multi_select": [
+            {
+              "id": "04f32831-cc49-4067-96ac-82fba713880a",
+              "name": "Own",
+              "color": "green"
+            },
+            {
+              "id": "219ee3dc-f794-4908-9e83-21a2c74665f9",
+              "name": "Owned",
+              "color": "gray"
+            },
+            {
+              "id": "e2f813b3-f177-4fa5-9ede-a78d06be613d",
+              "name": "Borrowed",
+              "color": "blue"
+            },
+            {
+              "id": "bc29cb54-d101-4e0c-a277-1152c61ff5c9",
+              "name": "Want",
+              "color": "yellow"
+            }
+          ]
+        },
+        "Width": {
+          "id": "%7DclS",
+          "type": "number",
+          "number": null
+        },
+        "Title": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "New title",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "New title",
+              "href": null
+            }
+          ]
+        }
+      },
+      "url": "https://www.notion.so/New-title-3c4d157e43034eb0a8c8ac9e81510dea",
+      "public_url": null
+    },
+    {
+      "object": "page",
+      "id": "4809bfc9-ead1-4ec0-9b69-0e11e675edaf",
+      "created_time": "2024-08-16T14:29:00.000Z",
+      "last_edited_time": "2024-08-16T14:29:00.000Z",
+      "created_by": {
+        "object": "user",
+        "id": "91b0cd33-11f5-410a-b8e3-fe4abd8be4f6"
+      },
+      "last_edited_by": {
+        "object": "user",
+        "id": "91b0cd33-11f5-410a-b8e3-fe4abd8be4f6"
+      },
+      "cover": null,
+      "icon": null,
+      "parent": {
+        "type": "database_id",
+        "database_id": "68915aa0-e5e9-4ca6-ad32-aa2b12afbe36"
+      },
+      "archived": false,
+      "in_trash": false,
+      "properties": {
+        "Editor": {
+          "id": "%3ATWa",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Weight": {
+          "id": "%3BOkt",
+          "type": "number",
+          "number": null
+        },
+        "Publication Year": {
+          "id": "%3CRz%3C",
+          "type": "number",
+          "number": null
+        },
+        "Pages": {
+          "id": "%3EWp%7C",
+          "type": "number",
+          "number": null
+        },
+        "ISBN": {
+          "id": "A%60%40W",
+          "type": "number",
+          "number": null
+        },
+        "Reading Status": {
+          "id": "BUBw",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Genres": {
+          "id": "CN%40A",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Data Retrieved": {
+          "id": "G%7D%5Dt",
+          "type": "checkbox",
+          "checkbox": false
+        },
+        "Setting Country": {
+          "id": "J%3CQT",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Illustrator": {
+          "id": "L%3FYs",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Setting Era": {
+          "id": "OpxN",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Series": {
+          "id": "RWu%5E",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Language": {
+          "id": "ThVO",
+          "type": "select",
+          "select": null
+        },
+        "Publisher": {
+          "id": "ThqF",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Imprint": {
+          "id": "TrNh",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Author": {
+          "id": "XwA%5B",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Publication Country": {
+          "id": "%5D%40Mp",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Height": {
+          "id": "%5EM%60v",
+          "type": "number",
+          "number": null
+        },
+        "Translator": {
+          "id": "_%5DG%60",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Collection": {
+          "id": "d%5B%3BZ",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Spine Width": {
+          "id": "iNm%3C",
+          "type": "number",
+          "number": null
+        },
+        "Format": {
+          "id": "q%3At%5D",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "First pub. year": {
+          "id": "wD%5DI",
+          "type": "number",
+          "number": null
+        },
+        "Ownership Status": {
+          "id": "zp%3Ap",
+          "type": "multi_select",
+          "multi_select": []
+        },
+        "Width": {
+          "id": "%7DclS",
+          "type": "number",
+          "number": null
+        },
+        "Title": {
+          "id": "title",
+          "type": "title",
+          "title": []
+        }
+      },
+      "url": "https://www.notion.so/4809bfc9ead14ec09b690e11e675edaf",
+      "public_url": null
+    }
+  ],
+  "next_cursor": null,
+  "has_more": false,
+  "type": "page_or_database",
+  "page_or_database": {},
+  "request_id": "a5fd9c84-acb0-4f00-970a-3aa7d1336961"
+}
