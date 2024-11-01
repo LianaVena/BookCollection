@@ -5,7 +5,7 @@ Ownership Status    - personal
 Reading Status      - personal
 ISBN                - openlibrary "isbn_13": ["9780241454695"]
 Author              - openlibrary "authors": [{"key": "/authors/OL34184A"}] https://openlibrary.org/authors/OL23919A.json
-Editor
+Editor              - openlibrary "contributions" / "contributors"
 Illustrator         - openlibrary "contributions": ["Tony Ross (Illustrator)"]
 Translator          - openlibrary "contributors": [{ "role": "Translator", "name": "Erica Segre" }]
 Publisher           - openlibrary "publishers": ["Penguin Books"]

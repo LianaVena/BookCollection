@@ -1,3 +1,4 @@
+import logging
 import os
 from dotenv import load_dotenv
 
@@ -11,3 +12,5 @@ headers = {
     "Content-Type": "application/json",
     "Notion-Version": "2022-06-28",
 }
+
+logging.basicConfig(format="LOG %(asctime)s: %(message)s", level=logging.INFO)

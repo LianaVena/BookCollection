@@ -9,7 +9,8 @@ dot_json = ".json"
 def get_data_openlibrary(isbn):
     url = ol_url + "isbn/" + str(isbn) + dot_json
     response = requests.get(url, headers=headers)
-    return response.json()
+    if response.status_code != 404:
+        return response.json()
 
 
 def get_work_url(json):
@@ -18,8 +19,8 @@ def get_work_url(json):
         return ol_url + utils.get_value(works[0], "key") + dot_json
 
 
-def get_data_openlibrary_work(url):
-    response = requests.get(url, headers=headers)
+def get_data_openlibrary_work(work_url):
+    response = requests.get(work_url, headers=headers)
     return response.json()
 
 
@@ -46,7 +47,7 @@ def get_authors(json: str):
                 response = requests.get(url, headers=headers)
                 author = utils.get_value(response.json(), "name")
                 if author != None:
-                    result.append(author)
+                    result.append(utils.replace_commas(author))
     return result
 
 
@@ -58,14 +59,14 @@ def get_contributors(json: str):
             if "(" in c:
                 contributor_list = c.split("(")
                 name = contributor_list[0]
-                name = name[:-1]
+                name = utils.replace_commas(name[:-1])
                 result[name] = contributor_list[1][:-1]
     name = ""
     cons2 = utils.get_value(json, "contributors")
     if cons2 != None:
         for c in cons2:
             role = utils.get_value(c, "role")
-            name = utils.get_value(c, "name")
+            name = utils.replace_commas(utils.get_value(c, "name"))
             if role != None and name != None:
                 result[name] = role
     return result
@@ -103,7 +104,7 @@ def get_publishers(json: str):
     pubs = utils.get_value(json, "publishers")
     if pubs != None:
         for p in pubs:
-            result.append(p)
+            result.append(utils.replace_commas(p))
     return result
 
 
@@ -114,10 +115,14 @@ def get_publishers(json: str):
 
 
 def get_format(json: str):
-    book_format = utils.get_value(json, "physical_format")
-    if book_format == None:
-        book_format = utils.get_value(json, "edition_name")
-    return utils.fix_result_empty(book_format)
+    result = []
+    book_format = utils.replace_commas(utils.get_value(json, "physical_format"))
+    if book_format != None:
+        result.append(book_format)
+    book_format2 = utils.replace_commas(utils.get_value(json, "edition_name"))
+    if book_format2 != None and book_format != book_format2:
+        result.append(book_format2)
+    return result
 
 
 # TODO genres
@@ -148,7 +153,7 @@ def get_setting_places(work_json: str):
     places = utils.get_value(work_json, "subject_places")
     if places != None:
         for p in places:
-            result.append(p)
+            result.append(utils.replace_commas(p))
     return result
 
 
@@ -157,7 +162,7 @@ def get_setting_times(work_json: str):
     times = utils.get_value(work_json, "subject_times")
     if times != None:
         for t in times:
-            result.append(t)
+            result.append(utils.replace_commas(t))
     return result
 
 
@@ -170,7 +175,7 @@ def get_languages(json: str):
             response = requests.get(url, headers=headers)
             lang_name = utils.get_value(response.json(), "name")
             if lang_name != None:
-                result.append(lang_name)
+                result.append(utils.replace_commas(lang_name))
     return result
 
 
@@ -180,8 +185,9 @@ def get_pages(json: str):
 
 def get_weight(json: str):
     weight = utils.get_value(json, "weight")
-    if weight != None:
-        weight = weight.split(" ")[0]
+    if weight == None:
+        return None
+    weight = weight.split(" ")[0]
     return utils.fix_result_empty(weight)
 
 

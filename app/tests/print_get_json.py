@@ -1,8 +1,8 @@
-from ..src.get_books import get_pages
+from ..src.get_books import get_all_pages
 
 
 def print_notion_book():
-    pages = get_pages()
+    pages = get_all_pages()
     for page in pages:
         print()
         print("Page id: " + page["id"])
