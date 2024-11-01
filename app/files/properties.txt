@@ -1,0 +1,28 @@
+Title               - openlibrary "title": "Helgoland"
+Icon                - same as cover
+Cover               - openlibrary "covers": [8739161] https://covers.openlibrary.org/b/id/8739161-M.jpg
+Ownership Status    - personal
+Reading Status      - personal
+ISBN                - openlibrary "isbn_13": ["9780241454695"]
+Author              - openlibrary "authors": [{"key": "/authors/OL34184A"}] https://openlibrary.org/authors/OL23919A.json
+Editor
+Illustrator         - openlibrary "contributions": ["Tony Ross (Illustrator)"]
+Translator          - openlibrary "contributors": [{ "role": "Translator", "name": "Erica Segre" }]
+Publisher           - openlibrary "publishers": ["Penguin Books"]
+Imprint
+Collection
+Series
+Format              - openlibrary "edition_name": "Hardback"
+Genres
+First Pub. Year
+Publication Year    - openlibrary "publish_date": "2021" "publish_date": "October 1, 1988"
+Publication Country
+Setting Country
+Setting Era
+Language            - openlibrary "languages": [{ "key": "/languages/eng" }]
+Pages               - openlibrary "number_of_pages": 208
+Weight              - openlibrary "weight": "331 grams"
+Width
+Height
+Spine Width
+Data Status

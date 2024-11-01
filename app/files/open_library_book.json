@@ -1,0 +1,33 @@
+{
+  "works": [{ "key": "/works/OL24513723W" }],
+  "title": "Helgoland",
+  "publishers": ["Penguin Books"],
+  "publish_date": "2021",
+  "key": "/books/OL32684268M",
+  "type": { "key": "/type/edition" },
+  "identifiers": {},
+  "classifications": {},
+  "weight": "331 grams",
+  "languages": [{ "key": "/languages/eng" }],
+  "number_of_pages": 208,
+  "edition_name": "Hardback",
+  "covers": [11318851],
+  "isbn_13": ["9780241454695"],
+  "translation_of": "Helgoland",
+  "contributors": [
+    { "role": "Translator", "name": "Erica Segre" },
+    { "name": "Simon Carnell", "role": "Translator" }
+  ],
+  "lc_classifications": ["QC174.123"],
+  "source_records": ["bwb:9780241454695"],
+  "latest_revision": 6,
+  "revision": 6,
+  "created": {
+    "type": "/type/datetime",
+    "value": "2021-06-27T22:17:52.933504"
+  },
+  "last_modified": {
+    "type": "/type/datetime",
+    "value": "2021-11-05T09:00:17.170127"
+  }
+}

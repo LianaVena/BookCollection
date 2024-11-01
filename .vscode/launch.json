@@ -5,16 +5,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Test get",
+      "name": "Main",
       "type": "debugpy",
       "request": "launch",
-      "module": "app.tests.test_get"
-    },
-    {
-      "name": "Test update",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "app.tests.test_update"
+      "module": "app.src.main"
     }
   ]
 }

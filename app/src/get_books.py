@@ -1,12 +1,11 @@
-from app import DATABASE_ID, headers
-import requests
 import json
 import os
+import requests
+from app import DATABASE_ID, headers
 
 
 def get_pages():
     url = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
-    print(url)
     payload = {"page_size": 100}
     response = requests.post(url, json=payload, headers=headers)
     data = response.json()

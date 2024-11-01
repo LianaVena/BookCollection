@@ -5,7 +5,7 @@
       "object": "page",
       "id": "3c4d157e-4303-4eb0-a8c8-ac9e81510dea",
       "created_time": "2024-08-16T14:29:00.000Z",
-      "last_edited_time": "2024-10-23T17:38:00.000Z",
+      "last_edited_time": "2024-11-01T14:23:00.000Z",
       "created_by": {
         "object": "user",
         "id": "91b0cd33-11f5-410a-b8e3-fe4abd8be4f6"
@@ -14,8 +14,16 @@
         "object": "user",
         "id": "d52410bb-cfff-4f14-8365-cc5677d70635"
       },
-      "cover": null,
-      "icon": null,
+      "cover": {
+        "type": "external",
+        "external": {
+          "url": "https://www.notion.so/images/page-cover/solid_yellow.png"
+        }
+      },
+      "icon": {
+        "type": "emoji",
+        "emoji": "😚"
+      },
       "parent": {
         "type": "database_id",
         "database_id": "68915aa0-e5e9-4ca6-ad32-aa2b12afbe36"
@@ -84,12 +92,16 @@
           "type": "multi_select",
           "multi_select": []
         },
-        "Data Retrieved": {
+        "Data status": {
           "id": "G%7D%5Dt",
-          "type": "checkbox",
-          "checkbox": false
+          "type": "select",
+          "select": {
+            "id": "z@Q]",
+            "name": "To be retrieved",
+            "color": "red"
+          }
         },
-        "Setting Country": {
+        "Setting Places": {
           "id": "J%3CQT",
           "type": "multi_select",
           "multi_select": []
@@ -99,7 +111,7 @@
           "type": "multi_select",
           "multi_select": []
         },
-        "Setting Era": {
+        "Setting Times": {
           "id": "OpxN",
           "type": "multi_select",
           "multi_select": []
@@ -111,8 +123,8 @@
         },
         "Language": {
           "id": "ThVO",
-          "type": "select",
-          "select": null
+          "type": "multi_select",
+          "multi_select": []
         },
         "Publisher": {
           "id": "ThqF",
@@ -159,7 +171,7 @@
           "type": "multi_select",
           "multi_select": []
         },
-        "First pub. year": {
+        "First Pub. Year": {
           "id": "wD%5DI",
           "type": "number",
           "number": null
@@ -202,7 +214,7 @@
             {
               "type": "text",
               "text": {
-                "content": "New title",
+                "content": "New new",
                 "link": null
               },
               "annotations": {
@@ -213,13 +225,13 @@
                 "code": false,
                 "color": "default"
               },
-              "plain_text": "New title",
+              "plain_text": "New new",
               "href": null
             }
           ]
         }
       },
-      "url": "https://www.notion.so/New-title-3c4d157e43034eb0a8c8ac9e81510dea",
+      "url": "https://www.notion.so/New-new-3c4d157e43034eb0a8c8ac9e81510dea",
       "public_url": null
     },
     {
@@ -279,12 +291,12 @@
           "type": "multi_select",
           "multi_select": []
         },
-        "Data Retrieved": {
+        "Data status": {
           "id": "G%7D%5Dt",
-          "type": "checkbox",
-          "checkbox": false
+          "type": "select",
+          "select": null
         },
-        "Setting Country": {
+        "Setting Places": {
           "id": "J%3CQT",
           "type": "multi_select",
           "multi_select": []
@@ -294,7 +306,7 @@
           "type": "multi_select",
           "multi_select": []
         },
-        "Setting Era": {
+        "Setting Times": {
           "id": "OpxN",
           "type": "multi_select",
           "multi_select": []
@@ -306,8 +318,8 @@
         },
         "Language": {
           "id": "ThVO",
-          "type": "select",
-          "select": null
+          "type": "multi_select",
+          "multi_select": []
         },
         "Publisher": {
           "id": "ThqF",
@@ -354,7 +366,7 @@
           "type": "multi_select",
           "multi_select": []
         },
-        "First pub. year": {
+        "First Pub. Year": {
           "id": "wD%5DI",
           "type": "number",
           "number": null
@@ -383,5 +395,5 @@
   "has_more": false,
   "type": "page_or_database",
   "page_or_database": {},
-  "request_id": "a5fd9c84-acb0-4f00-970a-3aa7d1336961"
+  "request_id": "3efe458d-aec8-425f-8071-c702075c8472"
 }
