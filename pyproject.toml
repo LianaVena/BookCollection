@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "book_collection_liana_vena"
-version = "0.1"
+version = "1.0"
 requires-python = ">= 3.10"
 authors = [{ name = "Liana Vena" }]
 description = "Notion plugin for importing book data"

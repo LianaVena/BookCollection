@@ -36,7 +36,10 @@ def get_data_blackwells(isbn):
 #
 
 
-def get_title(json):
+def get_title(json, soup):
+    if json == None:
+        title = soup.find("h1", {"class": "product__name"}).text
+        return title.strip()
     return _get_value(json, "title")
 
 
@@ -44,16 +47,28 @@ def get_subtitle(json):
     return _get_value(json, "subtitle")
 
 
-def get_cover_url(json):
+def get_cover_url(json, isbn):
+    blackwells = "https://blackwells.co.uk/jacket/" + isbn + ".webp"
+    if json == None:
+        return blackwells
     cover_id = _get_value(json, "covers")
     if cover_id != None:
         if isinstance(cover_id, list):
             cover_id = cover_id[0]
         return "https://covers.openlibrary.org/b/id/" + str(cover_id) + ".jpg"
-    return None
+    return blackwells
 
 
 def get_authors(json, soup):
+    result = set()
+    if json != None:
+        result = _get_authors_from_json(json)
+    if len(result) == 0:
+        result = _get_authors_blackwells(soup)
+    return list(result)
+
+
+def _get_authors_from_json(json):
     result = set()
     authors_json = _get_value(json, "authors")
     if authors_json != None:
@@ -62,9 +77,7 @@ def get_authors(json, soup):
                 author = _get_value(_get_author_json(link), "name")
                 if author != None:
                     result.add(_replace_commas(author))
-    if len(result) == 0:
-        result = _get_authors_blackwells(soup)
-    return list(result)
+    return result
 
 
 def _get_author_json(link):
@@ -155,13 +168,14 @@ def get_series(json):
 
 def get_formats(json, soup):
     result = set()
-    book_format = _replace_commas(_get_value(json, "physical_format"))
-    book_format2 = _replace_commas(_get_value(json, "edition_name"))
+    if json != None:
+        book_format = _replace_commas(_get_value(json, "physical_format"))
+        book_format2 = _replace_commas(_get_value(json, "edition_name"))
+        if book_format != None:
+            result.add(book_format)
+        if book_format2 != None:
+            result.add(book_format2)
     book_format3 = _replace_commas(_find_in_table(soup, "Edition:"))
-    if book_format != None:
-        result.add(book_format)
-    if book_format2 != None:
-        result.add(book_format2)
     if book_format3 != None:
         result.add(book_format3)
     return list(result)
@@ -171,7 +185,7 @@ def get_genres(work_json):
     result = []
     genres = _get_value(work_json, "subjects")
     if genres != None:
-        for i in range(15):
+        for i in range(min(len(genres), 15)):
             result.append(_replace_commas(genres[i]))
     return result
 
@@ -219,21 +233,26 @@ def get_setting_times(work_json):
     return result
 
 
-def get_languages(json):
+def get_languages(json, soup):
     result = []
-    lang = _get_value(json, "languages")
-    if lang != None:
-        for l in lang:
-            url = ol_url + _get_value(l, "key") + dot_json
-            response = requests.get(url)
-            lang_name = _get_value(response.json(), "name")
-            if lang_name != None:
-                result.append(_replace_commas(lang_name))
+    if json != None:
+        lang = _get_value(json, "languages")
+        if lang != None:
+            for l in lang:
+                url = ol_url + _get_value(l, "key") + dot_json
+                response = requests.get(url)
+                lang_name = _get_value(response.json(), "name")
+                if lang_name != None:
+                    result.append(_replace_commas(lang_name))
+    if len(result) == 0:
+        result.append(soup.find("td", itemprop="inLanguage").text)
     return result
 
 
 def get_pages(json, soup):
-    num = _get_value(json, "number_of_pages")
+    num = None
+    if json != None:
+        num = _get_value(json, "number_of_pages")
     if num == None:
         s = soup.find("td", itemprop="numberOfPages")
         return _get_text_from_html(s, 1)
@@ -241,7 +260,9 @@ def get_pages(json, soup):
 
 
 def get_weight(json, soup):
-    weight = _get_value(json, "weight")
+    weight = None
+    if json != None:
+        weight = _get_value(json, "weight")
     if weight == None:
         return _get_number_only(_find_in_table(soup, "Weight:"))
     return _get_number_only(weight)
@@ -265,7 +286,7 @@ def get_spine_width(soup):
 def _get_value(json, key):
     if key in json:
         return json[key]
-    logging.info("Key " + key + " does not exist")
+    # logging.info("Key " + key + " does not exist")
     return None
 
 
