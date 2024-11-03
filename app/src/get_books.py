@@ -4,7 +4,7 @@ import requests
 from app import DATABASE_ID, headers
 
 
-def get_pages(payload: dict):
+def get_pages(payload):
     url = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
     response = requests.post(url, json=payload, headers=headers)
     return response.json()
@@ -16,8 +16,3 @@ def get_all_pages():
         json.dump(data, f, ensure_ascii=False, indent=2)
     results = data["results"]
     return results
-
-
-def check_duplicate(title: str):
-    data = get_pages({"filter": {"property": "Title", "title": {"equals": title}}})
-    return len(data["results"]) > 0
