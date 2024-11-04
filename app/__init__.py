@@ -6,6 +6,7 @@ load_dotenv()
 
 NOTION_TOKEN = os.getenv("NOTION_TOKEN")
 DATABASE_ID = os.getenv("DATABASE_ID")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 headers = {
     "Authorization": "Bearer " + NOTION_TOKEN,

@@ -16,17 +16,15 @@ def update_page(page_id, data):
 
 
 def get_update_page_data_dict(isbn):
-    result = dict()
-    json = get_data.get_data_openlibrary(isbn)
-
-    soup = get_data.get_data_blackwells(isbn)
-    if json == None and len(soup) < 10:
-        logger.info("Invalid ISBN")
-        return
     if _check_duplicate(isbn):
         logger.info("ISBN already in database")
         return
-    cover_url = get_data.get_cover_url(json, isbn)
+
+    result = dict()
+    get_data.init(isbn)
+
+    result["ISBN"] = _get_text(isbn)
+    cover_url = get_data.get_cover_url()
     if cover_url != None:
         cover = {
             "type": "external",
@@ -34,33 +32,28 @@ def get_update_page_data_dict(isbn):
         }
         result["cover"] = cover
         result["icon"] = cover
-    result["ISBN"] = _get_text(isbn)
-    if json != None:
-        _set_rich_text(result, "Subtitle", get_data.get_subtitle(json))
-        contributors = get_data.get_contributors(json)
-        _set_multi_select(result, "Editor", get_data.get_editors(contributors))
-        _set_multi_select(
-            result, "Illustrator", get_data.get_illustrators(contributors)
-        )
-        _set_multi_select(result, "Translator", get_data.get_translators(contributors))
-        _set_multi_select(result, "Series", get_data.get_series(json))
-        work = get_data.get_data_openlibrary_work(get_data.get_work_url(json))
-        _set_multi_select(result, "Genres", get_data.get_genres(work))
-        _set_number(result, "First Pub. Year", get_data.get_first_pub_year(work))
-        _set_number(result, "Publication Year", get_data.get_pub_year(json, soup))
-        _set_multi_select(result, "Setting Places", get_data.get_setting_places(work))
-        _set_multi_select(result, "Setting Times", get_data.get_setting_times(work))
-    _set_rich_text(result, "Title", get_data.get_title(json, soup))
-    _set_multi_select(result, "Author", get_data.get_authors(json, soup))
-    _set_multi_select(result, "Publisher", get_data.get_publishers(soup))
-    _set_multi_select(result, "Imprint", get_data.get_imprints(soup))
-    _set_multi_select(result, "Format", get_data.get_formats(json, soup))
-    _set_multi_select(result, "Language", get_data.get_languages(json, soup))
-    _set_number(result, "Pages", get_data.get_pages(json, soup))
-    _set_number(result, "Weight", get_data.get_weight(json, soup))
-    _set_number(result, "Width", get_data.get_width(soup))
-    _set_number(result, "Height", get_data.get_height(soup))
-    _set_number(result, "Spine Width", get_data.get_spine_width(soup))
+    _set_rich_text(result, "Title", get_data.get_title())
+    _set_rich_text(result, "Subtitle", get_data.get_subtitle())
+    _set_multi_select(result, "Author", get_data.get_authors())
+    contributors = get_data.get_contributors()
+    _set_multi_select(result, "Editor", get_data.get_editors(contributors))
+    _set_multi_select(result, "Illustrator", get_data.get_illustrators(contributors))
+    _set_multi_select(result, "Translator", get_data.get_translators(contributors))
+    _set_multi_select(result, "Publisher", get_data.get_publishers())
+    _set_multi_select(result, "Imprint", get_data.get_imprints())
+    _set_multi_select(result, "Series", get_data.get_series())
+    _set_multi_select(result, "Format", get_data.get_formats())
+    _set_multi_select(result, "Genres", get_data.get_genres())
+    _set_number(result, "First Pub. Year", get_data.get_first_pub_year())
+    _set_number(result, "Publication Year", get_data.get_pub_year())
+    _set_multi_select(result, "Setting Places", get_data.get_setting_places())
+    _set_multi_select(result, "Setting Times", get_data.get_setting_times())
+    _set_multi_select(result, "Language", get_data.get_languages())
+    _set_number(result, "Pages", get_data.get_pages())
+    _set_number(result, "Weight", get_data.get_weight())
+    _set_number(result, "Width", get_data.get_width())
+    _set_number(result, "Height", get_data.get_height())
+    _set_number(result, "Spine Width", get_data.get_spine_width())
     result["Data status"] = {"select": {"name": "To be edited"}}
     return result
 
