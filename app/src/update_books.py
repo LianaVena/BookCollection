@@ -1,29 +1,36 @@
-import logging
-import requests
-from app import headers
 from ..src import get_data
-from ..src.get_books import get_pages
-
-logger = logging.getLogger(__name__)
 
 
-def update_page(page_id, data):
-    url = f"https://api.notion.com/v1/pages/{page_id}"
-    payload = {"properties": data}
-    result = requests.patch(url, json=payload, headers=headers)
-    logger.info(str(result.status_code) + " " + result.reason)
+def get_just_isbn(isbn):
+    result = dict()
+    result["ISBN"] = _get_isbn(isbn)
+    result["Data status"] = {"select": {"name": "To be retrieved"}}
+    return result
+
+
+def get_minimal_data(isbn):
+    result = dict()
+    get_data.init(isbn, False)
+    result["ISBN"] = _get_isbn(isbn)
+    _set_rich_text(result, "Title", get_data.get_title())
+    cover_url = get_data.get_cover_url()
+    if cover_url != None:
+        cover = {
+            "type": "external",
+            "external": {"url": cover_url},
+        }
+        result["cover"] = cover
+        result["icon"] = cover
+    _set_multi_select(result, "Author", get_data.get_authors())
+    result["Data status"] = {"select": {"name": "To be retrieved"}}
     return result
 
 
 def get_update_page_data_dict(isbn):
-    if _check_duplicate(isbn):
-        logger.info("ISBN already in database")
-        return
-
     result = dict()
     get_data.init(isbn)
 
-    result["ISBN"] = _get_text(isbn)
+    result["ISBN"] = _get_isbn(isbn)
     cover_url = get_data.get_cover_url()
     if cover_url != None:
         cover = {
@@ -58,12 +65,7 @@ def get_update_page_data_dict(isbn):
     return result
 
 
-def _check_duplicate(isbn):
-    data = get_pages({"filter": {"property": "ISBN", "title": {"equals": isbn}}})
-    return len(data["results"]) > 0
-
-
-def _get_text(text):
+def _get_isbn(text):
     return {"title": [{"text": {"content": text}}]}
 
 
@@ -90,5 +92,5 @@ def _get_multi_select(list):
 
 
 def _set_multi_select(result, name, list):
-    if list != None:
+    if list != None and len(list) > 0:
         result[name] = _get_multi_select(list)

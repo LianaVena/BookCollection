@@ -1,30 +1,21 @@
 import logging
+import os
 import requests
 from bs4 import BeautifulSoup
-from app import GOOGLE_API_KEY
+from app import GOOGLE_API_KEY, options
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 isbn = None
 g_json = None  # JSON from Google Books API call
 ol_json = None  # JSON from OpenLibrary API call
 ol_work_json = None  # JSON from OpenLibrary API call for work instead of edition
 bw_html = None  # HTML from BlackWells
-
-
-def init(isbn_input):
-    global isbn
-    global g_json
-    global ol_json
-    global ol_work_json
-    global bw_html
-    isbn = isbn_input
-    g_json = get_data_google(isbn)
-    ol_json = get_data_openlibrary(isbn)
-    if ol_json == None:
-        logger.info("This book is not on OpenLibrary. Consider adding it.")
-    if ol_json != None:
-        ol_work_json = get_data_openlibrary_work(get_work_url(ol_json))
-    bw_html = get_data_blackwells(isbn)
-
+gr_html = None  # HTML from Goodreads
 
 ol_url = "https://openlibrary.org/"
 dot_json = ".json"
@@ -32,31 +23,73 @@ dot_json = ".json"
 logger = logging.getLogger(__name__)
 
 
-def get_data_openlibrary(isbn):
+def init(isbn_input, all=True):
+    global isbn
+    global g_json
+    global ol_json
+    global ol_work_json
+    global bw_html
+    global gr_html
+    isbn = isbn_input
+    ol_json = _get_data_openlibrary(isbn)
+    if ol_json == None:
+        logger.info("This book is not on OpenLibrary. Consider adding it.")
+    if all == False:
+        return
+    g_json = _get_data_google(isbn)
+    if ol_json != None:
+        ol_work_json = _get_data_openlibrary_work(_get_work_url(ol_json))
+    bw_html = _get_data_blackwells(isbn)
+    gr_html = _get_data_goodreads(isbn)
+
+
+def _get_data_goodreads(isbn):
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    parent_dir = os.path.dirname(current_dir)
+    service = Service(parent_dir + "/driver/chromedriver.exe")
+    with webdriver.Chrome(service=service, options=options) as driver:
+        url = "https://www.goodreads.com/search?q=" + isbn
+        driver.get(url)
+        try:
+            logger.debug("Attempting a connection to GoodReads...")
+            WebDriverWait(driver, 15).until(
+                EC.visibility_of_all_elements_located((By.CLASS_NAME, "Text__title2"))
+            )
+            logger.debug("Connected.")
+        except TimeoutException:
+            logger.warning("Couldn't load GoodReads.")
+        html = driver.page_source
+        if html != None:
+            driver.execute_script("window.open('');")
+            driver.switch_to.window(driver.window_handles[-1])
+            return BeautifulSoup(html, "html.parser")
+
+
+def _get_data_openlibrary(isbn):
     url = ol_url + "isbn/" + isbn + dot_json
     response = requests.get(url)
     if response.ok == True:
         return response.json()
 
 
-def get_work_url(json):
+def _get_work_url(json):
     works = _get_value(json, "works")
     if works != None:
         return ol_url + _get_value(works[0], "key") + dot_json
 
 
-def get_data_openlibrary_work(work_url):
+def _get_data_openlibrary_work(work_url):
     response = requests.get(work_url)
     if response.ok == True:
         return response.json()
 
 
-def get_data_blackwells(isbn):
+def _get_data_blackwells(isbn):
     response = requests.get("https://blackwells.co.uk/bookshop/product/" + isbn)
     return BeautifulSoup(response.content, "html.parser")
 
 
-def get_data_google(isbn):
+def _get_data_google(isbn):
     url = (
         "https://www.googleapis.com/books/v1/volumes?q="
         + "isbn:"
@@ -83,13 +116,25 @@ def get_title():
     if title != None:
         return title
 
+    title = _get_title_blackwells()
+    if title != None:
+        return title
+
+    if gr_html != None:
+        soup = gr_html.find("h1", {"data-testid": "bookTitle"})
+        if soup != None and soup.text != None:
+            return soup.text.strip()
+
+
+def _get_title_blackwells():
     if bw_html != None:
-        title = bw_html.find("h1", {"class": "product__name"})
-        if title != None:
-            if len(title.contents) > 1:
-                title = title.contents[0]
-                return title.strip()
-            return title.text.strip()
+        soup = bw_html.find("h1", {"class": "product__name"})
+        if soup != None and soup.contents != None:
+            if len(soup.contents) > 1:
+                soup = soup.contents[0]
+                return soup.strip()
+            if soup.text != None:
+                return soup.text.strip()
 
 
 def get_subtitle():
@@ -102,11 +147,11 @@ def get_subtitle():
         return subtitle
 
     if bw_html != None:
-        titles = bw_html.find("h1", {"class": "product__name"})
-        if titles != None:
-            subtitle = titles.find("small")
-            if subtitle != None:
-                return subtitle.text.strip()
+        soup = bw_html.find("h1", {"class": "product__name"})
+        if soup != None:
+            soup = soup.find("small")
+            if soup != None and soup.text != None:
+                return soup.text.strip()
 
 
 def get_cover_url():
@@ -127,7 +172,7 @@ def get_cover_url():
 
 def get_authors():
     authors = set()
-    ol_authors = _get_authors_from_ol_json()
+    ol_authors = _get_authors_openlibrary()
     if ol_authors != None:
         authors.update(ol_authors)
         return list(authors)
@@ -142,7 +187,7 @@ def get_authors():
         return authors
 
 
-def _get_authors_from_ol_json():
+def _get_authors_openlibrary():
     if ol_json != None:
         result = set()
         authors_json = _get_value(ol_json, "authors")
@@ -163,29 +208,31 @@ def _get_author_json(link):
 
 
 def _get_authors_blackwells():
+    if bw_html != None:
+        soup = bw_html.find("p", {"class": "product__author"})
+        if soup != None and soup.contents != None:
+            return _get_authors_blackwells_filter_name(soup)
+
+
+def _get_authors_blackwells_filter_name(soup):
     result = set()
-    s = bw_html.find("p", {"class": "product__author"})
-    for i in range(1, len(s.contents), 2):
-        name = _get_text_from_html(s, i)
-        if len(name) == 0 or "\n" in name:
-            break
-        if "(" in name:
-            if "author" in name:
-                name = str(name).split(" (")[0]
+    for i in range(1, len(soup.contents), 2):
+        name = _get_text_from_html(soup, i)
+        if name != None:
+            if len(name) == 0 or "\n" in name:
+                break
+            if "(" in name:
+                if "author" in name:
+                    name = str(name).split(" (")[0]
+                    result.add(_replace_commas(name))
+            else:
                 result.add(_replace_commas(name))
-        else:
-            result.add(_replace_commas(name))
     return result
 
 
 def get_editors(contributors):
     keys = ["Editor", "Compiler", "editor"]
-    result = []
-    if contributors != None:
-        for key in contributors.keys():
-            if contributors[key] in keys:
-                result.append(key)
-    return result
+    return _get_specific_contributors(contributors, keys)
 
 
 def get_illustrators(contributors):
@@ -197,16 +244,15 @@ def get_illustrators(contributors):
         "illustrator",
         "colourist",
     ]
-    result = []
-    if contributors != None:
-        for key in contributors.keys():
-            if contributors[key] in keys:
-                result.append(key)
-    return result
+    return _get_specific_contributors(contributors, keys)
 
 
 def get_translators(contributors):
     keys = ["Translator", "translator"]
+    return _get_specific_contributors(contributors, keys)
+
+
+def _get_specific_contributors(contributors, keys):
     result = []
     if contributors != None:
         for key in contributors.keys():
@@ -240,25 +286,33 @@ def get_contributors():
 
 
 def _get_contributors_blackwells():
+    if bw_html != None:
+        soup = bw_html.find("p", {"class": "product__author"})
+        if soup != None and soup.contents != None:
+            return _get_contributors_blackwells_filter_name(soup)
+
+
+def _get_contributors_blackwells_filter_name(s):
     result = dict()
-    s = bw_html.find("p", {"class": "product__author"})
     for i in range(1, len(s.contents), 2):
         name = _get_text_from_html(s, i)
-        if len(name) == 0 or "\n" in name:
-            break
-        if "(" in name and "author" not in name:
-            name = str(name).split(" (")
-            if name[1][-1] != ")":
-                name[1] = name[1][:-1]
-            result[_replace_commas(name[0])] = _replace_commas(name[1][:-1])
+        if name != None:
+            if len(name) == 0 or "\n" in name:
+                break
+            if "(" in name and "author" not in name:
+                name = str(name).split(" (")
+                if name[1][-1] != ")":
+                    name[1] = name[1][:-1]
+                result[_replace_commas(name[0])] = _replace_commas(name[1][:-1])
     return result
 
 
 def get_publishers():
-    s = bw_html.find("td", itemprop="publisher")
-    text = _get_text_from_html(s, 1)
-    if text != None:
-        return [_replace_commas(text)]
+    if bw_html != None:
+        soup = bw_html.find("td", itemprop="publisher")
+        text = _get_text_from_html(soup, 1)
+        if text != None:
+            return [_replace_commas(text)]
 
     publishers = _get_value_from_json(ol_json, "publishers")
     if publishers != None and len(publishers) > 0:
@@ -270,10 +324,11 @@ def get_publishers():
 
 
 def get_imprints():
-    s = bw_html.find("td", itemprop="publisherImprint")
-    text = _get_text_from_html(s, 1)
-    if text != None:
-        return [_replace_commas(text)]
+    if bw_html != None:
+        soup = bw_html.find("td", itemprop="publisherImprint")
+        text = _get_text_from_html(soup, 1)
+        if text != None:
+            return [_replace_commas(text)]
 
     imprints = _get_value_from_json(ol_json, "publishers")
     if imprints != None and len(imprints) > 1:
@@ -284,7 +339,14 @@ def get_imprints():
 def get_series():
     series = _get_value_from_json(ol_json, "series")
     if series != None:
-        return [str(series[0]).split(",")[0]]
+        return [_replace_commas(str(series[0]).split(",")[0])]
+
+    if gr_html != None:
+        soup = gr_html.find("div", {"class": "ReviewSection__header"})
+        if soup != None and soup.contents != None:
+            soup = soup.contents[0]
+            if soup != None and soup.contents != None:
+                return [_replace_commas(soup.contents[0])]
 
 
 def get_formats():
@@ -296,13 +358,18 @@ def get_formats():
             result.add(book_format)
         if book_format2 != None:
             result.add(book_format2)
-    book_format3 = _replace_commas(_find_in_table(bw_html, "Edition:"))
-    if book_format3 != None:
-        result.add(book_format3)
+    if bw_html != None:
+        book_format3 = _replace_commas(_find_in_table(bw_html, "Edition:"))
+        if book_format3 != None:
+            result.add(book_format3)
     return list(result)
 
 
 def get_genres():
+    result = _get_genres_goodreads()
+    if result != None:
+        return result
+
     genres = _get_value_from_json(g_json, "categories")
     if genres == None:
         genres = _get_value_from_json(ol_json, "subjects")
@@ -315,7 +382,36 @@ def get_genres():
         return result
 
 
+def _get_genres_goodreads():
+    if gr_html != None:
+        result = []
+        soup = gr_html.find("div", {"data-testid": "genresList"})
+        soup = _check_and_go_in_contents(soup)
+        soup = _check_and_go_in_contents(soup)
+        if soup != None and soup.contents != None:
+            result = _get_genres_goodreads_names(soup)
+        if len(result) > 0 and "Genres" in result:
+            result.remove("Genres")
+        return result
+
+
+def _check_and_go_in_contents(genres):
+    if genres != None and genres.contents != None:
+        return genres.contents[0]
+
+
+def _get_genres_goodreads_names(genres):
+    result = []
+    for g in genres.contents:
+        result.append(_replace_commas(_get_text_from_html(g, 0)))
+    return result
+
+
 def get_first_pub_year():
+    if gr_html != None:
+        soup = gr_html.find("p", {"data-testid": "publicationInfo"})
+        if soup != None and soup.text != None:
+            return _get_year(soup.text)
     return _get_year(_get_value_from_json(ol_work_json, "first_publish_date"))
 
 
@@ -328,9 +424,10 @@ def get_pub_year():
     if date != None:
         return _get_year(date)
 
-    date = bw_html.find("td", itemprop="datePublished")
-    if date != None:
-        return _get_year(_get_text_from_html(date, 0))
+    if bw_html != None:
+        soup = bw_html.find("td", itemprop="datePublished")
+        if soup != None:
+            return _get_year(_get_text_from_html(soup, 0))
 
 
 def _get_year(date):
@@ -365,30 +462,30 @@ def get_setting_times():
 
 
 def get_languages():
-    result = get_language_from_ol()
-    if result != None and len(result) > 0:
-        return result
+    languages = _get_language_openlibrary()
+    if languages != None:
+        return languages
 
-    result = bw_html.find("td", itemprop="inLanguage")
-    if result != None:
-        return [result.text]
+    if bw_html != None:
+        soup = bw_html.find("td", itemprop="inLanguage")
+        if soup != None and soup.text != None:
+            return [_replace_commas(soup.text)]
 
-    result = _get_value_from_json(g_json, "language")
-    if result != None:
-        return [result]
-    return []
+    languages = _get_value_from_json(g_json, "language")
+    if languages != None:
+        return [_replace_commas(languages)]
 
 
-def get_language_from_ol():
+def _get_language_openlibrary():
     result = []
     lang = _get_value_from_json(ol_json, "languages")
     if lang != None:
         for l in lang:
             url = ol_url + _get_value(l, "key") + dot_json
             response = requests.get(url)
-            lang_name = _get_value(response.json(), "name")
-            if lang_name != None:
-                result.append(_replace_commas(lang_name))
+            name = _get_value(response.json(), "name")
+            if name != None:
+                result.append(_replace_commas(name))
         return result
 
 
@@ -401,45 +498,49 @@ def get_pages():
     if pages != None and str(pages).isdigit() and int(pages) > 0:
         return pages
 
-    pages = bw_html.find("td", itemprop="numberOfPages")
-    return _get_text_from_html(pages, 0)
+    if bw_html != None:
+        soup = bw_html.find("td", itemprop="numberOfPages")
+        return _get_text_from_html(soup, 0)
 
 
 def get_weight():
     weight = _get_value_from_json(ol_json, "weight")
-    if weight == None:
+    if weight == None and bw_html != None:
         return _get_number_only(_find_in_table(bw_html, "Weight:"))
     return _get_number_only(weight)
 
 
 def get_width():
-    width = _get_number_only(_find_in_table(bw_html, "Width:"))
-    if width != None:
-        return width
-    dims = get_dimensions_from_ol()
+    if bw_html != None:
+        width = _get_number_only(_find_in_table(bw_html, "Width:"))
+        if width != None:
+            return width
+    dims = _get_dimensions_openlibrary()
     if dims != None:
         return dims[1]
 
 
 def get_height():
-    height = _get_number_only(_find_in_table(bw_html, "Height:"))
-    if height != None:
-        return height
-    dims = get_dimensions_from_ol()
+    if bw_html != None:
+        height = _get_number_only(_find_in_table(bw_html, "Height:"))
+        if height != None:
+            return height
+    dims = _get_dimensions_openlibrary()
     if dims != None:
         return dims[0]
 
 
 def get_spine_width():
-    s_width = _get_number_only(_find_in_table(bw_html, "Spine width:"))
-    if s_width != None:
-        return s_width
-    dims = get_dimensions_from_ol()
+    if bw_html != None:
+        s_width = _get_number_only(_find_in_table(bw_html, "Spine width:"))
+        if s_width != None:
+            return s_width
+    dims = _get_dimensions_openlibrary()
     if dims != None:
         return dims[2]
 
 
-def get_dimensions_from_ol():
+def _get_dimensions_openlibrary():
     dims = _get_value_from_json(ol_json, "physical_dimensions")
     if dims != None:
         dims = dims.split(" x ")
@@ -470,15 +571,18 @@ def _replace_commas(text):
 
 
 def _find_in_table(soup, key):
-    s = soup.find("table", {"class": "u-separator-right"})
-    td = s.find("td", string=key)
-    if td != None:
-        tr = td.find_parent("tr")
-        return _get_text_from_html(tr, 3)
+    if soup != None:
+        s = soup.find("table", {"class": "u-separator-right"})
+        if s != None:
+            td = s.find("td", string=key)
+            if td != None:
+                tr = td.find_parent("tr")
+                if tr != None:
+                    return _get_text_from_html(tr, 3)
 
 
 def _get_text_from_html(source, i):
-    if source != None and len(source.contents) > i:
+    if source != None and source.contents != None and len(source.contents) > i:
         return source.contents[i].text
 
 
