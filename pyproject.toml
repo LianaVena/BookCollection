@@ -8,5 +8,5 @@ version = "1.1"
 requires-python = ">= 3.10"
 authors = [{ name = "Liana Vena" }]
 description = "Notion plugin for importing book data"
-dependencies = ["beautifulsoup4", "python-dotenv", "requests"]
+dependencies = ["beautifulsoup4", "python-dotenv", "requests", "selenium"]
 readme = "README.md"

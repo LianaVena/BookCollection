@@ -542,6 +542,8 @@ def get_spine_width():
 
 def _get_dimensions_openlibrary():
     dims = _get_value_from_json(ol_json, "physical_dimensions")
+    if "cent" in dims:
+        return
     if dims != None:
         dims = dims.split(" x ")
         dims[2] = str(dims[2]).removesuffix(" inches")
