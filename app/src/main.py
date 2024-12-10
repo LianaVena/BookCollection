@@ -28,14 +28,13 @@ def run():
 
 
 def add_by_isbn(all):
-    isbn = input("Input ISBN:").strip()
+    isbn = input("Input ISBN: ").strip()
     while isbn.isdigit() and len(isbn) == 13:
         if notion_requests.check_duplicate(isbn):
             logger.info("ISBN already in database")
         else:
             data_amount(all, isbn)
-        print("Input ISBN:")
-        isbn = input().strip()
+        isbn = input("Input ISBN: ").strip()
     print("Not a valid ISBN")
 
 
