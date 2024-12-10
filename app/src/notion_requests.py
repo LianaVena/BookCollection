@@ -20,7 +20,7 @@ def get_pages(payload=None):
             payload["start_cursor"] = next_cursor
         response = requests.post(url, headers=headers, json=payload)
         if response.status_code != 200:
-            log_message(response)
+            log_message("Error while retrieving books from database: ", response)
             break
         data = response.json()
         all_pages.extend(data["results"])
@@ -31,7 +31,6 @@ def get_pages(payload=None):
     result["results"] = all_pages
     with open(os.getcwd() + "/app/files/db.json", "w", encoding="utf8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
-    logger.info("Books have been retrieved.")
     return result
 
 
@@ -39,6 +38,7 @@ def get_pages_to_be_edited():
     json = get_pages(
         {"filter": {"property": "Data status", "select": {"equals": "To be retrieved"}}}
     )
+    logger.info("Books have been retrieved.")
     result = dict()
     for x in json["results"]:
         result[x["id"]] = x["properties"]["ISBN"]["title"][0]["text"]["content"]
@@ -49,7 +49,7 @@ def create_page(data):
     if data != None:
         url = "https://api.notion.com/v1/pages"
         result = requests.post(url, headers=headers, json=_create_payload(data))
-        log_message(result)
+        log_message("Add book: ", result)
         return result
 
 
@@ -57,14 +57,16 @@ def update_page(page_id, data):
     url = f"https://api.notion.com/v1/pages/{page_id}"
     payload = _create_payload(data)
     result = requests.patch(url, json=payload, headers=headers)
-    log_message(result)
+    log_message("Update book: ", result)
     return result
 
 
 def update_pages(pages):
     for id in pages.keys():
         data = get_update_page_data_dict(pages[id])
-        logger.info("Updating book " + data["Title"]["rich_text"][0]["text"]["content"])
+        logger.info(
+            "Updating book " + data["Title"]["rich_text"][0]["text"]["content"] + "..."
+        )
         update_page(id, data)
 
 

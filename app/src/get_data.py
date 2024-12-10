@@ -47,7 +47,7 @@ def _get_data_goodreads(isbn):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(current_dir)
     service = Service(parent_dir + "/driver/chromedriver.exe")
-    with webdriver.Chrome(service=service, options=options) as driver:
+    with webdriver.Chrome(options=options) as driver:
         url = "https://www.goodreads.com/search?q=" + isbn
         driver.get(url)
         try:
@@ -70,6 +70,7 @@ def _get_data_openlibrary(isbn):
     response = requests.get(url)
     if response.ok == True:
         return response.json()
+    logger.warning("Couldn't load OpenLibrary.")
 
 
 def _get_work_url(json):
@@ -102,6 +103,7 @@ def _get_data_google(isbn):
         data = response.json()
         if data["totalItems"] > 0:
             return data["items"][0]["volumeInfo"]
+    logger.warning("Couldn't load Google Books.")
 
 
 #
@@ -542,9 +544,9 @@ def get_spine_width():
 
 def _get_dimensions_openlibrary():
     dims = _get_value_from_json(ol_json, "physical_dimensions")
-    if "cent" in dims:
-        return
     if dims != None:
+        if "cent" in dims:
+            return
         dims = dims.split(" x ")
         dims[2] = str(dims[2]).removesuffix(" inches")
         return [str(int(float(d) * 25.4)) for d in dims]

@@ -1,16 +1,29 @@
-# book-collection
+# BookCollection
 
 Python scripts for adding data about books to Notion library
 
 ## Prerequisites
 
-Python version ≥ 3.10
+#### Python version ≥ 3.10
 
-**Packages:**
+#### Packages:
+```bash
+pip install beautifulsoup4
+pip install python-dotenv
+pip install requests
+pip install selenium
+```
 
-- beautifulsoup4
-- python-dotenv
-- requests
-- selenium
+#### ChromeDriver
+[Download](https://googlechromelabs.github.io/chrome-for-testing/) `chromedriver.exe` and add it to `path`
 
-chromedriver.exe in path
+#### Setup .env
+1. [Create a Notion Integration](https://www.notion.so/profile/integrations)
+2. Copy Internal Integration Secret to **`NOTION_TOKEN = secret_...`**
+3. Add the Integration to your Notion Database (go to `...` and `+ Add connections`)
+4. From URL copy part in between `notion.so/` and `?v=` to **`DATABASE_ID = `**
+5. Create API key at [Google Keys & Credentials](https://console.cloud.google.com/apis/credentials) and copy it to **`GOOGLE_API_KEY = `**
+
+## Running the application
+If you are using VS Code, you can use the configuration from launch.json
+Otherwise you can run it from terminal `python -m app.src.main`

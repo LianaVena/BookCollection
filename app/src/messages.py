@@ -4,9 +4,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def log_message(result):
+def log_message(message, result):
     logger.info(
-        str(result.status_code)
+        message
+        + str(result.status_code)
         + " "
         + result.reason
         + " "
