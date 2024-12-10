@@ -25,5 +25,5 @@ pip install selenium
 5. Create API key at [Google Keys & Credentials](https://console.cloud.google.com/apis/credentials) and copy it to **`GOOGLE_API_KEY = `**
 
 ## Running the application
-If you are using VS Code, you can use the configuration from launch.json
+If you are using VS Code, you can use the configuration from `launch.json`.
 Otherwise you can run it from terminal `python -m app.src.main`
