@@ -3,6 +3,7 @@ import logging
 import os
 import requests
 from app import DATABASE_ID, headers
+from ..src import STRINGS
 from ..src.messages import log_message
 from ..src.update_books import get_update_page_data_dict
 
@@ -38,7 +39,7 @@ def get_pages_to_be_edited():
     json = get_pages(
         {"filter": {"property": "Data status", "select": {"equals": "To be retrieved"}}}
     )
-    logger.info("Books have been retrieved.")
+    logger.info(STRINGS["info_books_retrieved"])
     result = dict()
     for x in json["results"]:
         result[x["id"]] = x["properties"]["ISBN"]["title"][0]["text"]["content"]
@@ -65,7 +66,9 @@ def update_pages(pages):
     for id in pages.keys():
         data = get_update_page_data_dict(pages[id])
         logger.info(
-            "Updating book " + data["Title"]["rich_text"][0]["text"]["content"] + "..."
+            STRINGS["info_updating_book"]
+            + data["Title"]["rich_text"][0]["text"]["content"]
+            + "..."
         )
         update_page(id, data)
 
