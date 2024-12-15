@@ -1,8 +1,8 @@
 import logging
-import os
 import requests
-from bs4 import BeautifulSoup
 from app import GOOGLE_API_KEY, options
+from ..src import STRINGS
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.service import Service
@@ -33,7 +33,7 @@ def init(isbn_input, all=True):
     isbn = isbn_input
     ol_json = _get_data_openlibrary(isbn)
     if ol_json == None:
-        logger.info("This book is not on OpenLibrary. Consider adding it.")
+        logger.info(STRINGS["warning_not_on_open_library"])
     if all == False:
         return
     g_json = _get_data_google(isbn)
@@ -44,20 +44,19 @@ def init(isbn_input, all=True):
 
 
 def _get_data_goodreads(isbn):
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    parent_dir = os.path.dirname(current_dir)
-    service = Service(parent_dir + "/driver/chromedriver.exe")
     with webdriver.Chrome(options=options) as driver:
         url = "https://www.goodreads.com/search?q=" + isbn
         driver.get(url)
         try:
-            logger.debug("Attempting a connection to GoodReads...")
+            logger.debug(STRINGS["info_connecting"] + STRINGS["good_reads"] + "...")
             WebDriverWait(driver, 15).until(
                 EC.visibility_of_all_elements_located((By.CLASS_NAME, "Text__title2"))
             )
-            logger.debug("Connected.")
+            logger.debug(STRINGS["info_connected"])
         except TimeoutException:
-            logger.warning("Couldn't load GoodReads.")
+            logger.warning(
+                STRINGS["warning_could_not_load"] + STRINGS["good_reads"] + "."
+            )
         html = driver.page_source
         if html != None:
             driver.execute_script("window.open('');")
@@ -70,7 +69,7 @@ def _get_data_openlibrary(isbn):
     response = requests.get(url)
     if response.ok == True:
         return response.json()
-    logger.warning("Couldn't load OpenLibrary.")
+    logger.warning(STRINGS["warning_could_not_load"] + STRINGS["open_library"] + ".")
 
 
 def _get_work_url(json):
@@ -103,7 +102,7 @@ def _get_data_google(isbn):
         data = response.json()
         if data["totalItems"] > 0:
             return data["items"][0]["volumeInfo"]
-    logger.warning("Couldn't load Google Books.")
+    logger.warning(STRINGS["warning_could_not_load"] + STRINGS["google_books"] + ".")
 
 
 #

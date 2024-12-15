@@ -1,10 +1,9 @@
 import logging
-from ..src import notion_requests
+from ..src import notion_requests, STRINGS
 from ..src.update_books import get_minimal_data
 from ..src.update_books import get_update_page_data_dict as get_data_dict
 
 logger = logging.getLogger(__name__)
-
 
 def run():
     while True:
@@ -28,15 +27,14 @@ def run():
 
 
 def add_by_isbn(all):
-    isbn = input("Input ISBN: ").strip()
+    isbn = input(STRINGS["input_isbn"]).strip()
     while isbn.isdigit() and len(isbn) == 13:
         if notion_requests.check_duplicate(isbn):
-            logger.info("ISBN already in database")
+            logger.info(STRINGS["warning_isbn_exists"])
         else:
             data_amount(all, isbn)
-        isbn = input("Input ISBN: ").strip()
-    print("Not a valid ISBN")
-
+        isbn = input(STRINGS["input_isbn"]).strip()
+    logger.warning(STRINGS["warning_isbn_invalid"])
 
 def data_amount(all, isbn):
     if all == True:
