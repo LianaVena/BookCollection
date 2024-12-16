@@ -12,6 +12,19 @@ NOTION_TOKEN = os.getenv("NOTION_TOKEN")
 DATABASE_ID = os.getenv("DATABASE_ID")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
+LANGUAGE = os.getenv("LANGUAGE")
+
+
+def get_source(source):
+    return os.getenv(source, False).lower() in ("true", "1", "t", "y", "yes")
+
+SOURCE_BLACKWELLS = get_source("SOURCE_BLACKWELLS")
+SOURCE_GOODREADS = get_source("SOURCE_GOODREADS")
+SOURCE_GOOGLE_BOOKS = get_source("SOURCE_GOOGLE_BOOKS")
+SOURCE_OPEN_LIBRARY = get_source("SOURCE_OPEN_LIBRARY")
+
+
+
 headers = {
     "Authorization": "Bearer " + NOTION_TOKEN,
     "Content-Type": "application/json",

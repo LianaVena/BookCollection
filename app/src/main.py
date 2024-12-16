@@ -22,6 +22,7 @@ def run():
                 notion_requests.update_pages(notion_requests.get_pages_to_be_edited())
             case "3":
                 notion_requests.get_pages()
+                logger.info(STRINGS["info_books_retrieved"])
             case "4":
                 add_by_isbn(True)
             case "c":
@@ -42,7 +43,7 @@ def add_by_isbn(all_data):
 def data_amount(all_data, isbn):
     if all_data:
         data = get_data_dict(isbn)
-        if data is not None:
+        if data:
             notion_requests.create_page(data)
     else:
         notion_requests.create_page(get_minimal_data(isbn))
