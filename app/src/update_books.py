@@ -14,7 +14,7 @@ def get_minimal_data(isbn):
     result[STRINGS["isbn"]] = _get_isbn(isbn)
     _set_rich_text(result, "Title", get_data.get_title())
     cover_url = get_data.get_cover_url()
-    if cover_url != None:
+    if cover_url is not None:
         cover = {
             "type": "external",
             "external": {"url": cover_url},
@@ -32,7 +32,7 @@ def get_update_page_data_dict(isbn):
 
     result[STRINGS["isbn"]] = _get_isbn(isbn)
     cover_url = get_data.get_cover_url()
-    if cover_url != None:
+    if cover_url is not None:
         cover = {
             "type": "external",
             "external": {"url": cover_url},
@@ -78,7 +78,7 @@ def _get_rich_text(text):
 
 
 def _set_rich_text(result, name, text):
-    if text != None:
+    if text is not None:
         result[name] = _get_rich_text(text)
 
 
@@ -87,14 +87,14 @@ def _get_number(num):
 
 
 def _set_number(result, name, num):
-    if str(num).isdigit() == True:
+    if str(num).isdigit():
         result[name] = _get_number(num)
 
 
-def _get_multi_select(list):
-    return {"multi_select": [{"name": name} for name in list]}
+def _get_multi_select(items):
+    return {"multi_select": [{"name": name} for name in items]}
 
 
-def _set_multi_select(result, name, list):
-    if list != None and len(list) > 0:
-        result[name] = _get_multi_select(list)
+def _set_multi_select(result, name, items):
+    if items is not None and len(items) > 0:
+        result[name] = _get_multi_select(items)

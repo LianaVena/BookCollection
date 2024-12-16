@@ -4,6 +4,7 @@ from typing import TypedDict
 
 logger = logging.getLogger(__name__)
 
+
 class Translations(TypedDict):
     isbn: str
     ownership: str

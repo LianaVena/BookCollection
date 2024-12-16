@@ -1,6 +1,5 @@
 from . import Translations
 
-
 STRINGS: Translations = {
     "isbn": "ISBN",
     "ownership": "Ownership Status",
