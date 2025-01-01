@@ -102,12 +102,12 @@ class OpenLibrary(Source):
         genres = utils.get_value(self.json, "subjects")
         if genres:
             return utils.filter_genres(genres)
-        genres = utils.get_value_if_json(self.work_json, "subjects")
+        genres = self._get_value_if_json(self.work_json, "subjects")
         if genres:
             return utils.filter_genres(genres)
 
     def get_first_pub_year(self):
-        return utils.get_year(utils.get_value_if_json(self.work_json, "first_publish_date"))
+        return utils.get_year(self._get_value_if_json(self.work_json, "first_publish_date"))
 
     def get_pub_year(self):
         date = utils.get_value(self.json, "publish_date")
@@ -116,7 +116,7 @@ class OpenLibrary(Source):
 
     def get_setting_places(self):
         result = []
-        places = utils.get_value_if_json(self.work_json, "subject_places")
+        places = self._get_value_if_json(self.work_json, "subject_places")
         if places:
             for p in places:
                 result.append(utils.replace_commas(p))
@@ -124,7 +124,7 @@ class OpenLibrary(Source):
 
     def get_setting_times(self):
         result = []
-        times = utils.get_value_if_json(self.work_json, "subject_times")
+        times = self._get_value_if_json(self.work_json, "subject_times")
         if times:
             for t in times:
                 result.append(utils.replace_commas(t))
@@ -145,12 +145,12 @@ class OpenLibrary(Source):
     def get_pages(self):
         pages = utils.get_value(self.json, "number_of_pages")
         if pages and str(pages).isdigit() and int(pages) > 0:
-            return pages
+            return str(pages)
 
     def get_weight(self):
         weight = utils.get_value(self.json, "weight")
         if weight:
-            return self._get_number_only(weight)
+            return utils.get_number_only(weight)
 
     def get_width(self):
         dims = self._get_dimensions_openlibrary()
@@ -170,6 +170,12 @@ class OpenLibrary(Source):
     #
 
     @staticmethod
+    def _get_value_if_json(json, label):
+        if json:
+            result = utils.get_value(json, label)
+            return result
+
+    @staticmethod
     def _get_work_data(work_url):
         response = requests.get(work_url)
         if response.ok:
@@ -185,12 +191,6 @@ class OpenLibrary(Source):
         result = requests.get(url).json()
         if result:
             return result
-
-    @staticmethod
-    def _get_number_only(result):
-        if not result:
-            return None
-        return "".join(i for i in result if i.isdigit())
 
     def _get_dimensions_openlibrary(self):
         dims = utils.get_value(self.json, "physical_dimensions")

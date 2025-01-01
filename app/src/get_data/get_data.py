@@ -1,7 +1,7 @@
 import logging
 
 from app.src import STRINGS
-from app.src.get_data.blackwells import BlackWells
+from app.src.get_data.blackwells import Blackwells
 from app.src.get_data.goodreads import GoodReads
 from app.src.get_data.google_books import GoogleBooks
 from app.src.get_data.open_library import OpenLibrary
@@ -23,7 +23,7 @@ class GetData:
     def __init__(self, isbn_input, sources: Sources = Sources()):
         self.sources = sources
         if sources.blackwells:
-            self.blackwells = BlackWells(isbn_input)
+            self.blackwells = Blackwells(isbn_input)
             if not self.blackwells.html:
                 self.sources.blackwells = False
         if sources.goodreads:
@@ -94,6 +94,8 @@ class GetData:
             "artist",
             "illustrator",
             "colourist",
+            "Cover Design",
+            "Book Designer"
         ]
         return self._get_specific_contributors(contributors, keys)
 
@@ -147,11 +149,13 @@ class GetData:
     def get_formats(self):
         result = set()
         if self.sources.open_library:
-            result.update(self.open_library.get_formats())
+            formats = self.open_library.get_formats()
+            if formats:
+                result.update(formats)
         if self.sources.blackwells:
-            book_format = self.blackwells.get_formats()
-            if book_format:
-                result.add(book_format)
+            formats = self.blackwells.get_formats()
+            if formats:
+                result.update(formats)
         if result:
             return list(result)
 

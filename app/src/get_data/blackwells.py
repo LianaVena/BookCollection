@@ -8,7 +8,7 @@ from app.src.get_data import utils
 from app.src.get_data.source_abstract import Source
 
 
-class BlackWells(Source):
+class Blackwells(Source):
     isbn = None
     html = None
 
@@ -67,7 +67,9 @@ class BlackWells(Source):
         ...
 
     def get_formats(self):
-        return utils.replace_commas(utils.find_in_table(self.html, "Edition:"))
+        soup = self.html.find("span", itemprop="bookFormat")
+        if soup and soup.text:
+            return [utils.replace_commas(soup.text.strip())]
 
     def get_genres(self):
         ...
@@ -143,8 +145,19 @@ class BlackWells(Source):
                     name = str(name).split(" (")
                     if name[1][-1] != ")":
                         name[1] = name[1][:-1]
-                    result[utils.replace_commas(name[0])] = utils.replace_commas(name[1][:-1])
+                    result[utils.replace_commas(name[0].strip())] = utils.replace_commas(name[1][:-1].strip())
         return result
 
     def _get_number(self, key):
-        return utils.get_number_only(utils.find_in_table(self.html, key))
+        return utils.get_number_only(self._find_in_table(self.html, key))
+
+    @staticmethod
+    def _find_in_table(soup, key):
+        if soup:
+            s = soup.find("section", {"class": "product-detail"})
+            if s:
+                td = s.find("td", string=key)
+                if td:
+                    tr = td.find_parent("tr")
+                    if tr:
+                        return utils.get_text_from_html(tr, 3)

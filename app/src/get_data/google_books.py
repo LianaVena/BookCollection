@@ -89,7 +89,7 @@ class GoogleBooks(Source):
     def get_pages(self):
         pages = utils.get_value(self.json, "pageCount")
         if pages and str(pages).isdigit() and int(pages) > 0:
-            return pages
+            return str(pages)
 
     def get_weight(self):
         ...

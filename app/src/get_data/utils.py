@@ -42,23 +42,6 @@ def get_value(json, key):
     return None
 
 
-def get_value_if_json(json, label):
-    if json:
-        result = get_value(json, label)
-        return result
-
-
 def get_text_from_html(source, i):
     if source and source.contents and len(source.contents) > i and source.contents[i].text:
         return source.contents[i].text
-
-
-def find_in_table(soup, key):
-    if soup:
-        s = soup.find("table", {"class": "u-separator-right"})
-        if s:
-            td = s.find("td", string=key)
-            if td:
-                tr = td.find_parent("tr")
-                if tr:
-                    return get_text_from_html(tr, 3)
