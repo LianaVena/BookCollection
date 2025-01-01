@@ -1,9 +1,11 @@
 import logging
+
 from ..src import notion_requests, STRINGS
 from ..src.update_books import get_minimal_data
 from ..src.update_books import get_update_page_data_dict as get_data_dict
 
 logger = logging.getLogger(__name__)
+
 
 def run():
     while True:
@@ -20,26 +22,28 @@ def run():
                 notion_requests.update_pages(notion_requests.get_pages_to_be_edited())
             case "3":
                 notion_requests.get_pages()
+                logger.info(STRINGS["info_books_retrieved"])
             case "4":
                 add_by_isbn(True)
             case "c":
                 exit()
 
 
-def add_by_isbn(all):
+def add_by_isbn(all_data):
     isbn = input(STRINGS["input_isbn"]).strip()
     while isbn.isdigit() and len(isbn) == 13:
         if notion_requests.check_duplicate(isbn):
             logger.info(STRINGS["warning_isbn_exists"])
         else:
-            data_amount(all, isbn)
+            data_amount(all_data, isbn)
         isbn = input(STRINGS["input_isbn"]).strip()
     logger.warning(STRINGS["warning_isbn_invalid"])
 
-def data_amount(all, isbn):
-    if all == True:
+
+def data_amount(all_data, isbn):
+    if all_data:
         data = get_data_dict(isbn)
-        if data != None:
+        if data:
             notion_requests.create_page(data)
     else:
         notion_requests.create_page(get_minimal_data(isbn))

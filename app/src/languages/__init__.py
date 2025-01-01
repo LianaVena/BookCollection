@@ -4,6 +4,7 @@ from typing import TypedDict
 
 logger = logging.getLogger(__name__)
 
+
 class Translations(TypedDict):
     isbn: str
     ownership: str
@@ -39,16 +40,20 @@ class Translations(TypedDict):
 
     input_isbn: str
 
+    blackwells: str
     google_books: str
     good_reads: str
     open_library: str
 
+    info_add_book: str
+    info_update_book: str
     info_books_retrieved: str
     info_connected: str
     info_connecting: str
     info_updating_book: str
 
     warning_could_not_load: str
+    warning_could_not_retrieve_from_db: str
     warning_isbn_exists: str
     warning_isbn_invalid: str
     warning_not_on_open_library: str

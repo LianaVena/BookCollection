@@ -1,6 +1,5 @@
 from . import Translations
 
-
 STRINGS: Translations = {
     "isbn": "ISBN",
     "ownership": "Ownership Status",
@@ -33,14 +32,18 @@ STRINGS: Translations = {
     "to_be_edited": "To be edited",
     "to_be_retrieved": "To be retrieved",
     "input_isbn": "Input ISBN: ",
+    "blackwells": "Blackwell's",
     "google_books": "Google Books",
     "good_reads": "GoodReads",
     "open_library": "OpenLibrary",
+    "info_add_book": "Add book: ",
+    "info_update_book": "Update book: ",
     "info_books_retrieved": "Books have been retrieved.",
     "info_connected": "Connected.",
     "info_connecting": "Attempting a connection to ",
     "info_updating_book": "Updating book ",
     "warning_could_not_load": "Couldn't load ",
+    "warning_could_not_retrieve_from_db": "Error while retrieving books from database: ",
     "warning_isbn_exists": "ISBN already in database.",
     "warning_isbn_invalid": "Not a valid ISBN.",
     "warning_not_on_open_library": "This book is not on OpenLibrary yet. Consider adding it.",

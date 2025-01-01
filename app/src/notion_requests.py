@@ -1,27 +1,29 @@
 import json
 import logging
 import os
+
 import requests
+
 from app import DATABASE_ID, headers
 from ..src import STRINGS
-from ..src.messages import log_message
+from ..src.messages import log_info, log_warning
 from ..src.update_books import get_update_page_data_dict
 
 logger = logging.getLogger(__name__)
 
 
 def get_pages(payload=None):
-    if payload == None:
+    if not payload:
         payload = dict()
     url = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
     all_pages = []
     next_cursor = None
     while True:
-        if next_cursor != None:
+        if next_cursor:
             payload["start_cursor"] = next_cursor
         response = requests.post(url, headers=headers, json=payload)
         if response.status_code != 200:
-            log_message("Error while retrieving books from database: ", response)
+            log_warning(STRINGS["warning_could_not_retrieve_from_db"], response)
             break
         data = response.json()
         all_pages.extend(data["results"])
@@ -36,21 +38,20 @@ def get_pages(payload=None):
 
 
 def get_pages_to_be_edited():
-    json = get_pages(
+    json_pages = get_pages(
         {"filter": {"property": "Data status", "select": {"equals": "To be retrieved"}}}
     )
-    logger.info(STRINGS["info_books_retrieved"])
     result = dict()
-    for x in json["results"]:
+    for x in json_pages["results"]:
         result[x["id"]] = x["properties"]["ISBN"]["title"][0]["text"]["content"]
     return result
 
 
 def create_page(data):
-    if data != None:
+    if data:
         url = "https://api.notion.com/v1/pages"
         result = requests.post(url, headers=headers, json=_create_payload(data))
-        log_message("Add book: ", result)
+        log_info(STRINGS["info_add_book"], result)
         return result
 
 
@@ -58,19 +59,19 @@ def update_page(page_id, data):
     url = f"https://api.notion.com/v1/pages/{page_id}"
     payload = _create_payload(data)
     result = requests.patch(url, json=payload, headers=headers)
-    log_message("Update book: ", result)
+    log_info(STRINGS["info_update_book"], result)
     return result
 
 
 def update_pages(pages):
-    for id in pages.keys():
-        data = get_update_page_data_dict(pages[id])
+    for page_id in pages.keys():
+        data = get_update_page_data_dict(pages[page_id])
         logger.info(
             STRINGS["info_updating_book"]
             + data["Title"]["rich_text"][0]["text"]["content"]
             + "..."
         )
-        update_page(id, data)
+        update_page(page_id, data)
 
 
 def _create_payload(data):
