@@ -20,7 +20,17 @@ class GetData:
 
     logger = logging.getLogger(__name__)
 
-    def __init__(self, isbn_input, sources: Sources = Sources()):
+    def __init__(self, isbn_input, sources: Sources = Sources(), full_data=False):
+        if not full_data:
+            self.sources = Sources(False, False, False, False)
+            self.open_library = OpenLibrary(isbn_input)
+            if self.open_library.json:
+                self.sources.open_library = True
+                return
+            self.blackwells = Blackwells(isbn_input)
+            if self.blackwells.html:
+                self.sources.blackwells = True
+                return
         self.sources = sources
         if sources.blackwells:
             self.blackwells = Blackwells(isbn_input)

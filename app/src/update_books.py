@@ -1,21 +1,14 @@
+from app import SOURCE_BLACKWELLS, SOURCE_GOODREADS, SOURCE_GOOGLE_BOOKS, SOURCE_OPEN_LIBRARY
 from .get_data.sources import Sources
 from ..src import STRINGS
 from ..src.get_data.get_data import GetData
-from app import SOURCE_BLACKWELLS, SOURCE_GOODREADS, SOURCE_GOOGLE_BOOKS, SOURCE_OPEN_LIBRARY
-
-
-def get_just_isbn(isbn):
-    result = dict()
-    result[STRINGS["isbn"]] = _get_isbn(isbn)
-    result[STRINGS["data_status"]] = {"select": {"name": STRINGS["to_be_retrieved"]}}
-    return result
 
 
 def get_minimal_data(isbn):
     result = dict()
-    data = GetData(isbn, Sources(SOURCE_BLACKWELLS, SOURCE_GOODREADS, SOURCE_GOOGLE_BOOKS, SOURCE_OPEN_LIBRARY))
+    data = GetData(isbn)
     result[STRINGS["isbn"]] = _get_isbn(isbn)
-    _set_rich_text(result, "Title", data.get_title())
+    _set_rich_text(result, STRINGS["title"], data.get_title())
     cover_url = data.get_cover_url()
     if cover_url:
         cover = {
@@ -31,7 +24,7 @@ def get_minimal_data(isbn):
 
 def get_update_page_data_dict(isbn):
     result = dict()
-    data = GetData(isbn, Sources(SOURCE_BLACKWELLS, SOURCE_GOODREADS, SOURCE_GOOGLE_BOOKS, SOURCE_OPEN_LIBRARY))
+    data = GetData(isbn, Sources(SOURCE_BLACKWELLS, SOURCE_GOODREADS, SOURCE_GOOGLE_BOOKS, SOURCE_OPEN_LIBRARY), True)
     result[STRINGS["isbn"]] = _get_isbn(isbn)
     cover_url = data.get_cover_url()
     if cover_url:
@@ -75,6 +68,10 @@ def _get_isbn(text):
     return {"title": [{"text": {"content": text}}]}
 
 
+def _get_isbn_value(item):
+    return item["title"][0]["text"]["content"]
+
+
 def _get_rich_text(text):
     return {"rich_text": [{"text": {"content": text}}]}
 
@@ -82,6 +79,10 @@ def _get_rich_text(text):
 def _set_rich_text(result, name, text):
     if text:
         result[name] = _get_rich_text(text)
+
+
+def _get_rich_text_value(item):
+    return item["rich_text"][0]["text"]["content"]
 
 
 def _get_number(num):
@@ -93,6 +94,10 @@ def _set_number(result, name, num):
         result[name] = _get_number(num)
 
 
+def _get_number_value(item):
+    return item["number"]
+
+
 def _get_multi_select(items):
     return {"multi_select": [{"name": name} for name in items]}
 
@@ -100,3 +105,7 @@ def _get_multi_select(items):
 def _set_multi_select(result, name, items):
     if items and len(items) > 0:
         result[name] = _get_multi_select(items)
+
+
+def _get_multi_select_value(items):
+    return [name["name"] for name in items["multi_select"]]
